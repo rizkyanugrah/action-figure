@@ -110,6 +110,7 @@ class Application:
         return menu
 
     def main(self):
+        self.cls()
 
         print("Silahkan login jika sudah punya akun")
         print("Silahkan register jika anda belum memiliki akun")
