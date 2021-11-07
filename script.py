@@ -6,11 +6,43 @@ from tabulate import tabulate
 
 class Application:
     CSV_FILE = 'data.csv'
+    USER_FILE = 'akun.csv'
 
     def cls(self):
         os.system('cls||clear')
 
         return
+
+    def register(self, name, password):
+        file = open(self.USER_FILE, 'a')
+        file.write(f"{name},{password}")
+
+    def access(self, option):
+        if (option == "login"):
+            username = input("masukan ussername anda : ")
+            password = input("masukan password anda : ")
+            self.login(username, password)
+        else:
+            print("masukan username yang ingin anda tambahkan! ")
+            username = input("masukan username : ")
+            password = input('masukan password : ')
+            self.register(username, password)
+            print("sukses, silahakan login >_<")
+            self.access("login")
+
+    def login(self, name, password):
+        login = False
+        file = open(self.USER_FILE, "r")
+        for i in file:
+            print()
+            a, b = i.split(",")
+            b = b.strip()
+            if(a == name and b == password):
+                login = True
+                break
+        file.close()
+        if(login == True):
+            print("sukses, silahkan masuk")
 
     def showAll(self):
         print('DAFTAR ACTION FIGURE')
@@ -71,13 +103,24 @@ class Application:
         print('[2] Tambah Action Figure')
         print('[3] Ubah Action Figure')
         print('[4] Hapus Action Figure')
-        print('[8] Selesai')
+        print('[99] Selesai')
 
         menu = int(input('Masukan menu yang ingin dipilih : '))
 
         return menu
 
     def main(self):
+
+        print("Silahkan login jika sudah punya akun")
+        print("Silahkan register jika anda belum memiliki akun")
+
+        option = input("(Login/register) : ")
+
+        if(option != "login" and option != "register"):
+            self.start()
+        else:
+            self.access(option)
+
         self.cls()
         terminate = False
 
@@ -109,7 +152,7 @@ class Application:
 
                     self.cls()
                     self.showAll()
-                elif menu == 0:
+                elif menu == 99:
                     terminate = True
                 else:
                     print('Masukan pilihan yang tersedia')
