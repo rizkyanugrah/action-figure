@@ -7,6 +7,12 @@ from tabulate import tabulate
 class Application:
     CSV_FILE = 'data.csv'
     USER_FILE = 'akun.csv'
+    
+    # users = {
+    #     "username" :  ["rizky", "admin"],
+    #     "password" : ["123", "admin"],
+    #     "ID" : [1,2]
+    # }
 
     def cls(self):
         os.system('cls||clear')
@@ -19,7 +25,7 @@ class Application:
 
     def access(self, option):
         if (option == "login"):
-            username = input("masukan ussername anda : ")
+            username = input("masukan username anda : ")
             password = input("masukan password anda : ")
             self.login(username, password)
         else:
@@ -43,6 +49,12 @@ class Application:
         file.close()
         if(login == True):
             print("sukses, silahkan masuk")
+        # search_user = self.users.get("username").index(name)
+        # print (search_user)
+        # if self.login in self.users.get("username")[search_user] and Password == self.users.get("password")[search_user]:
+        #     print("Berhasil Login")
+        # else:
+        #     print("Gagal Login Password Anda Salah!")
 
     def showAll(self):
         print('DAFTAR ACTION FIGURE')
@@ -125,7 +137,7 @@ class Application:
         self.cls()
         terminate = False
 
-        self.showAll()
+        # self.showAll()
 
         try:
             while terminate == False:
