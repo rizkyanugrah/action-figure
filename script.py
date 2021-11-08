@@ -4,14 +4,14 @@ import pandas as pd
 from tabulate import tabulate
 
 
-class Application:  
+class Application:
     CSV_FILE = 'data.csv'
-    
+
     users = {
-        "role"     : ['user','admin'],
-        "username" :  ["rizky", "admin"],
-        "password" : ["123", "admin"],
-        "ID" : [1,2]
+        "role": ['user', 'admin'],
+        "username":  ["rizky", "admin"],
+        "password": ["123", "admin"],
+        "ID": [1, 2]
     }
 
     def cls(self):
@@ -39,7 +39,7 @@ class Application:
         search_user = self.users.get("username").index(name)
         if self.users.get("username")[search_user] and password == self.users.get("password")[search_user]:
             if self.users.get("role")[search_user] == "admin":
-                return self.menuListAdmin(),"admin"
+                return self.menuListAdmin(), "admin"
             else:
                 return self.menuList(), "user"
         else:
@@ -106,7 +106,7 @@ class Application:
         menu = int(input('Masukan menu yang ingin dipilih : '))
 
         return menu
-    
+
     def menuListAdmin(self):
         print('\nMenu')
         print('[1] Daftar Action Figure')
@@ -126,11 +126,11 @@ class Application:
         print("Silahkan register jika anda belum memiliki akun")
 
         option = input("(Login/register) : ")
-                
+
         if (option == "login"):
             username = input("masukan username anda : ")
             password = input("masukan password anda : ")
-            abc,role = self.login(username, password)
+            abc, role = self.login(username, password)
         else:
             print("masukan username yang ingin anda tambahkan! ")
             username = input("masukan username : ")
@@ -146,7 +146,6 @@ class Application:
 
         try:
             while terminate == False:
-                # menu = self.menuList()
                 if role == "admin":
                     menu = self.menuListAdmin()
                     if menu == 1:
@@ -171,38 +170,15 @@ class Application:
 
                         self.cls()
                         self.showAll()
+                    elif menu == 99:
+                        terminate = True
                 else:
                     menu = self.menuList()
+
                     if menu == 1:
                         self.cls()
                         self.showAll()
-                
-                # if menu == 1:
-                #     self.cls()
-                #     self.showAll()
-                # elif menu == 2:
-                #     self.cls()
-                #     self.showAll()
 
-                #     self.insertData()
-                #     self.cls()
-                #     self.showAll()
-                # elif menu == 3:
-                #     self.cls()
-                #     self.changeData()
-
-                #     self.cls()
-                #     self.showAll()
-                # elif menu == 4:
-                #     self.cls()
-                #     self.deleteData()
-
-                #     self.cls()
-                #     self.showAll()
-                # elif menu == 99:
-                #     terminate = True
-                # else:
-                    print('Masukan pilihan yang tersedia')
         except KeyboardInterrupt:
             print("\nSampai nanti!")
 
