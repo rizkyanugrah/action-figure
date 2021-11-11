@@ -117,7 +117,7 @@ class Application:
         if (option == "login"):
             username = input("masukan username anda : ")
             password = input("masukan password anda : ")
-            abc, role = self.login(username, password)
+            _, role = self.login(username, password)
         else:
             print("masukan username yang ingin anda tambahkan! ")
             username = input("masukan username : ")
