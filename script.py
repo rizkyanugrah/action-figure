@@ -47,11 +47,13 @@ class Application:
         price = input("Masukkan Harga : ")
         stock = input("Masukkan Stok : ")
 
-        df = pd.read_csv(self.CSV_FILE)
+        data = [
+            [code, name, price, stock]
+        ]
 
-        df.loc[len(df)] = [code, name, price, stock]
+        newData = pd.DataFrame(data)
 
-        df.to_csv(self.CSV_FILE, index=False)
+        newData.to_csv('data.csv', index=False, mode='a', header=False)
 
         return
 
