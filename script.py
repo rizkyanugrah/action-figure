@@ -22,19 +22,6 @@ class Application:
     def register(self, name, password):
         print('register')
 
-    # def access(self, option):
-    #     if (option == "login"):
-    #         username = input("masukan username anda : ")
-    #         password = input("masukan password anda : ")
-    #         self.login(username, password)
-    #     else:
-    #         print("masukan username yang ingin anda tambahkan! ")
-    #         username = input("masukan username : ")
-    #         password = input('masukan password : ')
-    #         self.register(username, password)
-    #         print("sukses, silahakan login >_<")
-    #         self.access("login")
-
     def login(self, name, password):
         search_user = self.users.get("username").index(name)
         if self.users.get("username")[search_user] and password == self.users.get("password")[search_user]:
