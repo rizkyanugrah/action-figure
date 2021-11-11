@@ -37,7 +37,7 @@ class Application:
 
         df = pd.read_csv(self.CSV_FILE)
 
-        print(tabulate(df, headers='keys', showindex='never'))
+        print(tabulate(df, headers='keys', showindex='never', tablefmt='pretty'))
 
         return
 
