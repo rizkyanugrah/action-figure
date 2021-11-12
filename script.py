@@ -1,6 +1,6 @@
 import os
 import time
-import pandas as pd
+import pandas
 from tabulate import tabulate
 
 
@@ -54,7 +54,7 @@ class Application:
     def showAll(self):
         print('DAFTAR ACTION FIGURE')
 
-        df = pd.read_csv(self.CSV_FILE)
+        df = pandas.read_csv(self.CSV_FILE)
 
         print(tabulate(df, headers='keys', showindex='never', tablefmt='pretty'))
 
@@ -70,7 +70,7 @@ class Application:
             [code, name, price, stock]
         ]
 
-        newData = pd.DataFrame(data)
+        newData = pandas.DataFrame(data)
 
         newData.to_csv('data.csv', index=False, mode='a', header=False)
 
@@ -80,7 +80,7 @@ class Application:
         self.showAll()
         code = int(input("Pilih data dengan kode : "))
 
-        df = pd.read_csv(self.CSV_FILE)
+        df = pandas.read_csv(self.CSV_FILE)
         df = df[df['KODE'] != code]
 
         codeInput = input("\nMasukkan Kode : ")
@@ -98,7 +98,7 @@ class Application:
         self.showAll()
 
         code = int(input("\nPilih data dengan kode : "))
-        df = pd.read_csv(self.CSV_FILE)
+        df = pandas.read_csv(self.CSV_FILE)
         df = df[df['KODE'] != code]
 
         df.to_csv(self.CSV_FILE, index=False)
@@ -120,11 +120,64 @@ class Application:
         print('[2] Tambah Action Figure')
         print('[3] Ubah Action Figure')
         print('[4] Hapus Action Figure')
+        print('[5] Transaksi')
         print('[99] Selesai')
 
         menu = int(input('Masukan menu yang ingin dipilih : '))
 
         return menu
+
+    def transaction(self):
+        self.showAll()
+
+        code = int(input("\nPilih data dengan kode : "))
+
+        df = pandas.read_csv(self.CSV_FILE, index_col=False)
+
+        selectedData = df.loc[df['KODE'] == code]
+
+        # print(selectedData.empty)
+
+        if selectedData.empty:
+            print('Data tidak ditemukan!')
+
+            return
+
+        code = selectedData.values[0][0]
+        name = selectedData.values[0][1]
+        price = selectedData.values[0][2]
+        stock = selectedData.values[0][3]
+
+        print(f'Data dengan KODE {code} tersedia.\n')
+
+        print(tabulate({'KODE': [code],
+                        'NAMA': [name],
+                        'HARGA': [price],
+                        'STOK': [stock],
+                        }, headers='keys'))
+
+        print(f'\nHarga satuan dari {name} adalah {price}.')
+
+        stock = int(input('\nStok yang ingin dibeli : '))
+
+        print(f'Total pembayaran adalah : {price * stock}')
+
+        paid = input('\nApakah sudah selesai membayar (Y/N) : ').lower()
+
+        if paid == 'n':
+            print('Pembayaran tidak dilanjutkan')
+            time.sleep(3)
+
+            return
+
+        # substraction the existing stock based on stock input
+        df.loc[df.KODE == code, 'STOK'] -= stock
+
+        df.to_csv('data.csv', index=False)
+
+        print('\nTerima kasih sudah membayar! ^^')
+
+        return
 
     def main(self):
         self.cls()
@@ -153,6 +206,8 @@ class Application:
         try:
             while terminate == False:
                 if role == "admin":
+                    self.showAll()
+
                     menu = self.menuListAdmin()
                     if menu == 1:
                         self.cls()
@@ -176,6 +231,14 @@ class Application:
 
                         self.cls()
                         self.showAll()
+                    elif menu == 5:
+                        self.cls()
+                        self.transaction()
+
+                        time.sleep(2)
+
+                        self.cls()
+
                     elif menu == 99:
                         print("\nTerima Kasih Telah Mencoba Aplikasi Action-Figure")
                         terminate = True
