@@ -2,7 +2,6 @@ import os
 import time
 import pandas
 import pwinput
-import locale
 from tabulate import tabulate
 from termcolor import colored
 
