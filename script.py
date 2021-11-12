@@ -98,9 +98,20 @@ class Application:
         self.showAll()
 
         code = int(input("\nPilih data dengan kode : "))
-        df = pandas.read_csv(self.CSV_FILE)
-        df = df[df['KODE'] != code]
 
+        df = pandas.read_csv(self.CSV_FILE)
+
+        selectedData = df[df['KODE'] == code].index
+
+        if selectedData.empty:
+            print('Data tidak ditemukan')
+
+            return
+
+        # if KODE row based on data frame same as code variable, delete it
+        df.drop(df[df['KODE'] == code].index, inplace=True)
+
+        # making change to csv file
         df.to_csv(self.CSV_FILE, index=False)
 
         return
@@ -135,8 +146,6 @@ class Application:
         df = pandas.read_csv(self.CSV_FILE, index_col=False)
 
         selectedData = df.loc[df['KODE'] == code]
-
-        # print(selectedData.empty)
 
         if selectedData.empty:
             print('Data tidak ditemukan!')
