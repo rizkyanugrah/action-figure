@@ -1,7 +1,10 @@
 import os
 import time
 import pandas
+import pwinput
+import locale
 from tabulate import tabulate
+from termcolor import colored
 
 
 class Application:
@@ -43,16 +46,16 @@ class Application:
                 else:
                     return "user"
             else:
-                print("\nGagal Login Password Anda Salah!")
+                print(colored('Username atau password salah!', 'red'))
                 time.sleep(2)
                 return self.main()
         except:
-            print("\nMaaf Data Tidak Tersedia!")
+            print(colored('Maaf data tidak tersedia!', 'yellow'))
             time.sleep(2)
             self.main()
 
     def showAll(self):
-        print('DAFTAR ACTION FIGURE')
+        print(colored('[+] DAFTAR ACTION FIGURE [+]\n', 'green'))
 
         df = pandas.read_csv(self.CSV_FILE)
 
@@ -78,21 +81,41 @@ class Application:
 
     def changeData(self):
         self.showAll()
-        code = int(input("Pilih data dengan kode : "))
+        code = int(input("\nPilih data dengan kode : "))
 
         df = pandas.read_csv(self.CSV_FILE)
-        df = df[df['KODE'] != code]
+
+        # select row of data based on code variable
+        selectedData = df.loc[df.KODE == code]
+        index = selectedData.index.values[0]
+
+        print('Note: Ketik Enter jika data tidak ingin diubah')
 
         codeInput = input("\nMasukkan Kode : ")
         nameInput = input("Masukkan Nama : ")
         priceInput = input("Masukkan Harga : ")
         stockInput = input("Masukkan Stok : ")
 
-        df.loc[len(df)] = [codeInput, nameInput, priceInput, stockInput]
+        # change the data based on user input
+        # there is a null coalesce 'feature'
+        df.at[index, 'KODE'] = self.coalesce(
+            codeInput, selectedData.values[0][0])
+        df.at[index, 'NAMA'] = self.coalesce(
+            nameInput, selectedData.values[0][1])
+        df.at[index, 'HARGA'] = self.coalesce(
+            priceInput, selectedData.values[0][2])
+        df.at[index, 'STOK'] = self.coalesce(
+            stockInput, selectedData.values[0][3])
 
         df.to_csv(self.CSV_FILE, index=False)
 
         return
+
+    def coalesce(self, value_one, value_two):
+        if value_one == "":
+            return value_two
+        else:
+            return value_one
 
     def deleteData(self):
         self.showAll()
@@ -104,7 +127,8 @@ class Application:
         selectedData = df[df['KODE'] == code].index
 
         if selectedData.empty:
-            print('Data tidak ditemukan')
+            print(colored('Data tidak ditemukan!', 'red'))
+            time.sleep(2)
 
             return
 
@@ -117,24 +141,28 @@ class Application:
         return
 
     def menuList(self):
-        print('\nMenu List User ')
-        print('\n[1] Daftar Action Figure')
-        print('[99] Selesai')
+        print(colored('[====================]', 'green'))
+        print(colored('[+] Menu List User [+]', 'yellow'))
+        print(colored('[====================]', 'green'))
+        print(colored('[1]', 'magenta'), 'Daftar Action Figure')
+        print(colored('[99]', 'red'), 'Keluar Aplikasi')
 
         menu = int(input('Masukan menu yang ingin dipilih : '))
 
         return menu
 
     def menuListAdmin(self):
-        print('\nMenu List Admin ')
-        print('\n[1] Daftar Action Figure')
-        print('[2] Tambah Action Figure')
-        print('[3] Ubah Action Figure')
-        print('[4] Hapus Action Figure')
-        print('[5] Transaksi')
-        print('[99] Selesai')
+        print(colored('[====================]', 'green'))
+        print(colored('[+] Menu List Admin [+]', 'yellow'))
+        print(colored('[====================]', 'green'))
+        print(colored('[1]', 'magenta'), 'Daftar Action Figure')
+        print(colored('[2]', 'blue'), 'Tambah Action Figure')
+        print(colored('[3]', 'green'), 'Ubah Action Figure')
+        print(colored('[4]', 'red'), 'Hapus Action Figure')
+        print(colored('[5]', 'yellow'), 'Transaksi')
+        print(colored('[99]', 'red'), 'Keluar Aplikasi')
 
-        menu = int(input('Masukan menu yang ingin dipilih : '))
+        menu = int(input('\nMasukan menu yang ingin dipilih : '))
 
         return menu
 
@@ -148,7 +176,8 @@ class Application:
         selectedData = df.loc[df['KODE'] == code]
 
         if selectedData.empty:
-            print('Data tidak ditemukan!')
+            print(colored('Data tidak ditemukan!', 'red'))
+            time.sleep(2)
 
             return
 
@@ -157,7 +186,7 @@ class Application:
         price = selectedData.values[0][2]
         stock = selectedData.values[0][3]
 
-        print(f'Data dengan KODE {code} tersedia.\n')
+        print(f'\nData dengan KODE {code} tersedia.\n')
 
         print(tabulate({'KODE': [code],
                         'NAMA': [name],
@@ -165,16 +194,23 @@ class Application:
                         'STOK': [stock],
                         }, headers='keys'))
 
-        print(f'\nHarga satuan dari {name} adalah {price}.')
+        coloredName = colored(name, 'cyan')
+        coloredPrice = colored(price, 'green')
 
-        stock = int(input('\nStok yang ingin dibeli : '))
+        print(f'\nHarga satuan dari {coloredName} adalah {coloredPrice}.')
 
-        print(f'Total pembayaran adalah : {price * stock}')
+        amount = int(input('\nBerapa yang ingin dibeli : '))
+
+        summary = colored(price * amount, 'green')
+
+        # print(f'\n= {price} x {stock} = {summary}')
+
+        print(f'Total pembayaran adalah : {summary}')
 
         paid = input('\nApakah sudah selesai membayar (Y/N) : ').lower()
 
         if paid == 'n':
-            print('Pembayaran tidak dilanjutkan')
+            print(colored('Pembayaran tidak dilanjutkan!', 'red'))
             time.sleep(3)
 
             return
@@ -184,38 +220,47 @@ class Application:
 
         df.to_csv('data.csv', index=False)
 
-        print('\nTerima kasih sudah membayar! ^^')
+        print(colored('\nTerima kasih sudah membayar! ^^', 'green'))
+        time.sleep(3)
 
         return
 
     def main(self):
         self.cls()
 
-        print("Silahkan login jika sudah punya akun")
-        print("Silahkan register jika anda belum memiliki akun")
+        print(
+            colored('[========================================================]', 'green'))
+        print(
+            colored("[+] Silahkan login jika sudah punya akun \t\t[+]", 'yellow'))
+        print(
+            colored("[+] Silahkan register jika anda belum memiliki akun \t[+]", 'yellow'))
+        print(
+            colored('[========================================================]', 'green'))
 
         option = input("\n(Login/Register) : ").lower()
 
         if (option == "login"):
-            username = input("\nmasukan username anda : ")
-            password = input("masukan password anda : ")
+            username = input("\nMasukkan Username Anda : ")
+            password = pwinput.pwinput()
             role = self.login(username, password)
 
         elif (option == "register"):
             role = self.register()
 
         else:
-            print("\nMasukan Inputan Yang Benar")
+            print(colored('Masukkan inputan dengan benar!', 'red'))
             time.sleep(2)
+
             return self.main()
 
         self.cls()
         terminate = False
 
+        self.showAll()
+
         try:
             while terminate == False:
                 if role == "admin":
-                    self.showAll()
 
                     menu = self.menuListAdmin()
                     if menu == 1:
@@ -249,7 +294,8 @@ class Application:
                         self.cls()
 
                     elif menu == 99:
-                        print("\nTerima Kasih Telah Mencoba Aplikasi Action-Figure")
+                        print(
+                            colored(print("\nTerima Kasih Telah Mencoba Aplikasi Action-Figure", 'green')))
                         terminate = True
 
                 elif role == "user":
@@ -258,7 +304,8 @@ class Application:
                         self.cls()
                         self.showAll()
                     elif menu == 99:
-                        print("\nTerima Kasih Telah Mencoba Aplikasi Action-Figure")
+                        print(
+                            colored(print("\nTerima Kasih Telah Mencoba Aplikasi Action-Figure", 'green')))
                         terminate = True
 
         except KeyboardInterrupt:
