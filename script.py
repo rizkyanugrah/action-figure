@@ -1,5 +1,5 @@
-#!/usr/bin/python3
 import os
+import time
 import pandas as pd
 from tabulate import tabulate
 
@@ -9,28 +9,47 @@ class Application:
 
     users = {
         "role": ['user', 'admin'],
-        "username":  ["rizky", "admin"],
-        "password": ["123", "admin"],
+        "username":  ["user", "admin"],
+        "password": ["user", "admin"],
         "ID": [1, 2]
     }
 
     def cls(self):
-        os.system('cls||clear')
-
+        os.system('cls')
         return
 
-    def register(self, name, password):
-        print('register')
+    def register(self):
+        Create_Username = input("\nMasukan Username : ")
+        if Create_Username in self.users.get("username"):
+            print("Username Telah Terdaftar, Silahkan Pilih Username Yang Lain")
+            return self.register()
+        else:
+            Create_Password = input("Masukan Password : ")
+            self.users.get("role").append("user")
+            self.users.get("username").append(Create_Username)
+            self.users.get("password").append(Create_Password)
+            ID = len(self.users.get("ID"))
+            self.users.get("ID").append(ID+1)
+            print("\nData Berhasil Di Tambahkan")
+            return self.login(Create_Username, Create_Password)
 
     def login(self, name, password):
-        search_user = self.users.get("username").index(name)
-        if self.users.get("username")[search_user] and password == self.users.get("password")[search_user]:
-            if self.users.get("role")[search_user] == "admin":
-                return self.menuListAdmin(), "admin"
+        try:
+            search_user = self.users.get("username").index(name)
+
+            if self.users.get("username")[search_user] and password == self.users.get("password")[search_user]:
+                if self.users.get("role")[search_user] == "admin":
+                    return "admin"
+                else:
+                    return "user"
             else:
-                return self.menuList(), "user"
-        else:
-            print("Gagal Login Password Anda Salah!")
+                print("\nGagal Login Password Anda Salah!")
+                time.sleep(2)
+                return self.main()
+        except:
+            print("\nMaaf Data Tidak Tersedia!")
+            time.sleep(2)
+            self.main()
 
     def showAll(self):
         print('DAFTAR ACTION FIGURE')
@@ -79,8 +98,7 @@ class Application:
         self.showAll()
 
         code = int(input("\nPilih data dengan kode : "))
-        df = pd.read_csv(self.CSV_FILE
-                         )
+        df = pd.read_csv(self.CSV_FILE)
         df = df[df['KODE'] != code]
 
         df.to_csv(self.CSV_FILE, index=False)
@@ -88,8 +106,8 @@ class Application:
         return
 
     def menuList(self):
-        print('\nMenu')
-        print('[1] Daftar Action Figure')
+        print('\nMenu List User ')
+        print('\n[1] Daftar Action Figure')
         print('[99] Selesai')
 
         menu = int(input('Masukan menu yang ingin dipilih : '))
@@ -97,8 +115,8 @@ class Application:
         return menu
 
     def menuListAdmin(self):
-        print('\nMenu')
-        print('[1] Daftar Action Figure')
+        print('\nMenu List Admin ')
+        print('\n[1] Daftar Action Figure')
         print('[2] Tambah Action Figure')
         print('[3] Ubah Action Figure')
         print('[4] Hapus Action Figure')
@@ -114,24 +132,23 @@ class Application:
         print("Silahkan login jika sudah punya akun")
         print("Silahkan register jika anda belum memiliki akun")
 
-        option = input("(Login/register) : ")
+        option = input("\n(Login/Register) : ").lower()
 
         if (option == "login"):
-            username = input("masukan username anda : ")
+            username = input("\nmasukan username anda : ")
             password = input("masukan password anda : ")
-            _, role = self.login(username, password)
+            role = self.login(username, password)
+
+        elif (option == "register"):
+            role = self.register()
+
         else:
-            print("masukan username yang ingin anda tambahkan! ")
-            username = input("masukan username : ")
-            password = input('masukan password : ')
-            self.register(username, password)
-            print("sukses, silahakan login >_<")
-            self.access("login")
+            print("\nMasukan Inputan Yang Benar")
+            time.sleep(2)
+            return self.main()
 
         self.cls()
         terminate = False
-
-        self.showAll()
 
         try:
             while terminate == False:
@@ -160,13 +177,17 @@ class Application:
                         self.cls()
                         self.showAll()
                     elif menu == 99:
+                        print("\nTerima Kasih Telah Mencoba Aplikasi Action-Figure")
                         terminate = True
-                else:
-                    menu = self.menuList()
 
+                elif role == "user":
+                    menu = self.menuList()
                     if menu == 1:
                         self.cls()
                         self.showAll()
+                    elif menu == 99:
+                        print("\nTerima Kasih Telah Mencoba Aplikasi Action-Figure")
+                        terminate = True
 
         except KeyboardInterrupt:
             print("\nSampai nanti!")
