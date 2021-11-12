@@ -203,7 +203,7 @@ class Application:
 
         summary = colored(price * amount, 'green')
 
-        # print(f'\n= {price} x {stock} = {summary}')
+        print(f'\nTotal = {price} x {stock} = {summary}')
 
         print(f'Total pembayaran adalah : {summary}')
 
