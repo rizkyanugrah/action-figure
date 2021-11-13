@@ -243,7 +243,7 @@ class Application:
     def transactionHistory(self):
         print(colored('[+] DAFTAR HISTORI TRANSAKSI [+]\n', 'green'))
 
-        df = pandas.read_csv('history.csv')
+        df = pandas.read_csv(self.TRANSACTION_HISTORY_CSV)
 
         print(tabulate(df, headers='keys', showindex='never', tablefmt='pretty'))
 
