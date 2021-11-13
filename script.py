@@ -89,6 +89,13 @@ class Application:
 
         # select row of data based on code variable
         selectedData = df.loc[df.KODE == code]
+
+        if selectedData.empty:
+            print(colored('Data tidak ditemukan!', 'red'))
+            time.sleep(2)
+
+            return
+
         index = selectedData.index.values[0]
 
         print('Note: Ketik Enter jika data tidak ingin diubah')
