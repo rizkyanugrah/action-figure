@@ -12,7 +12,7 @@ class Application:
     ACTION_FIGURE_CSV = 'data.csv'
     TRANSACTION_HISTORY_CSV = 'history.csv'
 
-    users = {
+    USERS = {
         "role": ['user', 'admin'],
         "username":  ["user", "admin"],
         "password": ["user", "admin"],
@@ -25,25 +25,25 @@ class Application:
 
     def register(self):
         Create_Username = input("\nMasukan Username : ")
-        if Create_Username in self.users.get("username"):
+        if Create_Username in self.USERS.get("username"):
             print("Username Telah Terdaftar, Silahkan Pilih Username Yang Lain")
             return self.register()
         else:
             Create_Password = input("Masukan Password : ")
-            self.users.get("role").append("user")
-            self.users.get("username").append(Create_Username)
-            self.users.get("password").append(Create_Password)
-            ID = len(self.users.get("ID"))
-            self.users.get("ID").append(ID+1)
+            self.USERS.get("role").append("user")
+            self.USERS.get("username").append(Create_Username)
+            self.USERS.get("password").append(Create_Password)
+            ID = len(self.USERS.get("ID"))
+            self.USERS.get("ID").append(ID+1)
             print("\nData Berhasil Di Tambahkan")
             return self.login(Create_Username, Create_Password)
 
     def login(self, name, password):
         try:
-            search_user = self.users.get("username").index(name)
+            search_user = self.USERS.get("username").index(name)
 
-            if self.users.get("username")[search_user] and password == self.users.get("password")[search_user]:
-                if self.users.get("role")[search_user] == "admin":
+            if self.USERS.get("username")[search_user] and password == self.USERS.get("password")[search_user]:
+                if self.USERS.get("role")[search_user] == "admin":
                     return "admin"
                 else:
                     return "user"
