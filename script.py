@@ -144,6 +144,7 @@ class Application:
         print(colored('[+] Menu List User [+]', 'yellow'))
         print(colored('[====================]', 'green'))
         print(colored('[1]', 'magenta'), 'Daftar Action Figure')
+        print(colored('[2]', 'yellow'), 'Transaksi')
         print(colored('[99]', 'red'), 'Keluar Aplikasi')
 
         menu = int(input('Masukan menu yang ingin dipilih : '))
@@ -215,7 +216,7 @@ class Application:
             return
 
         # substraction the existing stock based on stock input
-        df.loc[df.KODE == code, 'STOK'] -= stock
+        df.loc[df.KODE == code, 'STOK'] -= amount
 
         df.to_csv('data.csv', index=False)
 
@@ -293,8 +294,7 @@ class Application:
                         self.cls()
 
                     elif menu == 99:
-                        print(
-                            colored(print("\nTerima Kasih Telah Mencoba Aplikasi Action-Figure", 'green')))
+                        print(colored("\nTerima Kasih Telah Mencoba Aplikasi Action-Figure", 'green'))
                         terminate = True
 
                 elif role == "user":
@@ -302,9 +302,15 @@ class Application:
                     if menu == 1:
                         self.cls()
                         self.showAll()
+                    elif menu == 2:
+                        self.cls()
+                        self.transaction()
+
+                        time.sleep(2)
+
+                        self.cls()
                     elif menu == 99:
-                        print(
-                            colored(print("\nTerima Kasih Telah Mencoba Aplikasi Action-Figure", 'green')))
+                        print(colored("\nTerima Kasih Telah Mencoba Aplikasi Action-Figure", 'green'))
                         terminate = True
 
         except KeyboardInterrupt:
