@@ -304,8 +304,6 @@ class Application:
         try:
             while terminate == False:
 
-                self.showAll()
-
                 if role == "admin":
 
                     menu = self.menuListAdmin()
