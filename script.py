@@ -203,7 +203,13 @@ class Application:
 
         print(f'\nHarga satuan dari {coloredName} adalah {coloredPrice}.')
 
-        amount = int(input('\nBerapa yang ingin dibeli : '))
+        amount = int(
+            input('\nBerapa yang ingin dibeli (tidak boleh lebih dari stok yang ada) : '))
+
+        if amount >= stock:
+            print(colored('\nTidak boleh lebih dari stok!', 'red'))
+
+            return
 
         summary = colored(price * amount, 'green')
 
@@ -295,10 +301,11 @@ class Application:
         self.cls()
         terminate = False
 
-        self.showAll()
-
         try:
             while terminate == False:
+
+                self.showAll()
+
                 if role == "admin":
 
                     menu = self.menuListAdmin()
