@@ -150,7 +150,7 @@ class Application:
         print(colored('[2]', 'yellow'), 'Transaksi')
         print(colored('[99]', 'red'), 'Keluar Aplikasi')
 
-        menu = int(input('Masukan menu yang ingin dipilih : '))
+        menu = int(input('\nMasukan menu yang ingin dipilih : '))
 
         return menu
 
