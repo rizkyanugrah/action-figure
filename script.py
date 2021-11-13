@@ -2,12 +2,15 @@ import os
 import time
 import pandas
 import pwinput
+import random
 from tabulate import tabulate
 from termcolor import colored
+from datetime import datetime
 
 
 class Application:
-    CSV_FILE = 'data.csv'
+    ACTION_FIGURE_CSV = 'data.csv'
+    TRANSACTION_HISTORY_CSV = 'history.csv'
 
     users = {
         "role": ['user', 'admin'],
@@ -56,7 +59,7 @@ class Application:
     def showAll(self):
         print(colored('[+] DAFTAR ACTION FIGURE [+]\n', 'green'))
 
-        df = pandas.read_csv(self.CSV_FILE)
+        df = pandas.read_csv(self.ACTION_FIGURE_CSV)
 
         print(tabulate(df, headers='keys', showindex='never', tablefmt='pretty'))
 
@@ -82,7 +85,7 @@ class Application:
         self.showAll()
         code = int(input("\nPilih data dengan kode : "))
 
-        df = pandas.read_csv(self.CSV_FILE)
+        df = pandas.read_csv(self.ACTION_FIGURE_CSV)
 
         # select row of data based on code variable
         selectedData = df.loc[df.KODE == code]
@@ -106,7 +109,7 @@ class Application:
         df.at[index, 'STOK'] = self.coalesce(
             stockInput, selectedData.values[0][3])
 
-        df.to_csv(self.CSV_FILE, index=False)
+        df.to_csv(self.ACTION_FIGURE_CSV, index=False)
 
         return
 
@@ -121,7 +124,7 @@ class Application:
 
         code = int(input("\nPilih data dengan kode : "))
 
-        df = pandas.read_csv(self.CSV_FILE)
+        df = pandas.read_csv(self.ACTION_FIGURE_CSV)
 
         selectedData = df[df['KODE'] == code].index
 
@@ -135,7 +138,7 @@ class Application:
         df.drop(df[df['KODE'] == code].index, inplace=True)
 
         # making change to csv file
-        df.to_csv(self.CSV_FILE, index=False)
+        df.to_csv(self.ACTION_FIGURE_CSV, index=False)
 
         return
 
@@ -160,6 +163,7 @@ class Application:
         print(colored('[3]', 'green'), 'Ubah Action Figure')
         print(colored('[4]', 'red'), 'Hapus Action Figure')
         print(colored('[5]', 'yellow'), 'Transaksi')
+        print(colored('[6]', 'cyan'), 'Daftar Histori Transaksi')
         print(colored('[99]', 'red'), 'Keluar Aplikasi')
 
         menu = int(input('\nMasukan menu yang ingin dipilih : '))
@@ -171,7 +175,7 @@ class Application:
 
         code = int(input("\nPilih data dengan kode : "))
 
-        df = pandas.read_csv(self.CSV_FILE, index_col=False)
+        df = pandas.read_csv(self.ACTION_FIGURE_CSV, index_col=False)
 
         selectedData = df.loc[df['KODE'] == code]
 
@@ -207,6 +211,8 @@ class Application:
 
         print(f'Total pembayaran adalah : {summary}')
 
+        customer_name = input('\nMasukkan nama pembeli : ')
+
         paid = input('\nApakah sudah selesai membayar (Y/N) : ').lower()
 
         if paid == 'n':
@@ -218,10 +224,43 @@ class Application:
         # substraction the existing stock based on stock input
         df.loc[df.KODE == code, 'STOK'] -= amount
 
-        df.to_csv('data.csv', index=False)
+        self.addToTransactionHistory(
+            selectedData, customer_name, amount, price * amount)
+
+        df.to_csv(self.ACTION_FIGURE_CSV, index=False)
 
         print(colored('\nTerima kasih sudah membayar! ^^', 'green'))
         time.sleep(3)
+
+        return
+
+    def transactionHistory(self):
+        print(colored('[+] DAFTAR HISTORI TRANSAKSI [+]\n', 'green'))
+
+        df = pandas.read_csv('history.csv')
+
+        print(tabulate(df, headers='keys', showindex='never', tablefmt='pretty'))
+
+        return
+
+    def addToTransactionHistory(self, data, customer_name, quantity, total):
+        # generate transaction code. random number 100000-500000 and concat with datetime today take the year
+        # example = TRX28695221
+        transaction_code = f"TRX{random.randint(100000, 500000)}{datetime.today().strftime('%Y')}"
+        action_figure_name = data.values[0][1]
+        action_figure_price = data.values[0][2]
+
+        data = [
+            [
+                transaction_code, customer_name, action_figure_name,
+                action_figure_price, quantity, total
+            ]
+        ]
+
+        newData = pandas.DataFrame(data)
+
+        newData.to_csv(self.TRANSACTION_HISTORY_CSV,
+                       index=False, mode='a', header=False)
 
         return
 
@@ -293,8 +332,13 @@ class Application:
 
                         self.cls()
 
+                    elif menu == 6:
+                        self.cls()
+                        self.transactionHistory()
+
                     elif menu == 99:
-                        print(colored("\nTerima Kasih Telah Mencoba Aplikasi Action-Figure", 'green'))
+                        print(
+                            colored("\nTerima Kasih Telah Mencoba Aplikasi Action-Figure", 'green'))
                         terminate = True
 
                 elif role == "user":
@@ -310,7 +354,8 @@ class Application:
 
                         self.cls()
                     elif menu == 99:
-                        print(colored("\nTerima Kasih Telah Mencoba Aplikasi Action-Figure", 'green'))
+                        print(
+                            colored("\nTerima Kasih Telah Mencoba Aplikasi Action-Figure", 'green'))
                         terminate = True
 
         except KeyboardInterrupt:
