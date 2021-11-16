@@ -19,10 +19,28 @@ class Application:
         "ID": [1, 2]
     }
 
+    # Clear Terminal
     def cls(self):
         os.system('cls')
         return
-
+    
+    # Format Rupiah
+    def formatrupiah(self, uang):
+        y = str(uang)
+        if len(y) <= 3 :
+            return 'Rp ' + y     
+        else :
+            p = y[-3:]
+            q = y[:-3]
+            return   self.formatrupiah(q) + '.' + p
+            print ('Rp ') +  self.formatrupiah(q) + '.' + p
+        
+    # Slice money
+    def Regex(self, uang):
+        money = uang
+        get_int_only = ''.join(x for x in money if x.isdigit())
+        return int(get_int_only)
+        
     def register(self):
         Create_Username = input("\nMasukan Username : ")
         if Create_Username in self.USERS.get("username"):
@@ -48,7 +66,7 @@ class Application:
                 else:
                     return "user"
             else:
-                print(colored('Username atau password salah!', 'red'))
+                print(colored('Password Anda salah!', 'red'))
                 time.sleep(2)
                 return self.main()
         except:
@@ -68,11 +86,11 @@ class Application:
     def insertData(self):
         code = input("\nMasukkan Kode : ")
         name = input("Masukkan Nama : ")
-        price = input("Masukkan Harga : ")
+        price = input("Masukkan Harga : ")        
         stock = input("Masukkan Stok : ")
-
+        
         data = [
-            [code, name, price, stock]
+            [code, name, self.formatrupiah(price), stock]
         ]
 
         newData = pandas.DataFrame(data)
@@ -112,7 +130,7 @@ class Application:
         df.at[index, 'NAMA'] = self.coalesce(
             nameInput, selectedData.values[0][1])
         df.at[index, 'HARGA'] = self.coalesce(
-            priceInput, selectedData.values[0][2])
+            self.formatrupiah(priceInput), selectedData.values[0][2])
         df.at[index, 'STOK'] = self.coalesce(
             stockInput, selectedData.values[0][3])
 
@@ -147,35 +165,10 @@ class Application:
         # making change to csv file
         df.to_csv(self.ACTION_FIGURE_CSV, index=False)
 
+        print(colored('Data berhasil di Hapus!', 'green'))
+        time.sleep(2)
+        
         return
-
-    def menuList(self):
-        print(colored('[====================]', 'green'))
-        print(colored('[+] Menu List User [+]', 'yellow'))
-        print(colored('[====================]', 'green'))
-        print(colored('[1]', 'magenta'), 'Daftar Action Figure')
-        print(colored('[2]', 'yellow'), 'Transaksi')
-        print(colored('[99]', 'red'), 'Keluar Aplikasi')
-
-        menu = int(input('\nMasukan menu yang ingin dipilih : '))
-
-        return menu
-
-    def menuListAdmin(self):
-        print(colored('[====================]', 'green'))
-        print(colored('[+] Menu List Admin [+]', 'yellow'))
-        print(colored('[====================]', 'green'))
-        print(colored('[1]', 'magenta'), 'Daftar Action Figure')
-        print(colored('[2]', 'blue'), 'Tambah Action Figure')
-        print(colored('[3]', 'green'), 'Ubah Action Figure')
-        print(colored('[4]', 'red'), 'Hapus Action Figure')
-        print(colored('[5]', 'yellow'), 'Transaksi')
-        print(colored('[6]', 'cyan'), 'Daftar Histori Transaksi')
-        print(colored('[99]', 'red'), 'Keluar Aplikasi')
-
-        menu = int(input('\nMasukan menu yang ingin dipilih : '))
-
-        return menu
 
     def transaction(self):
         self.showAll()
@@ -207,7 +200,7 @@ class Application:
 
         coloredName = colored(name, 'cyan')
         coloredPrice = colored(price, 'green')
-
+        
         print(f'\nHarga satuan dari {coloredName} adalah {coloredPrice}.')
 
         amount = int(
@@ -217,10 +210,14 @@ class Application:
             print(colored('\nTidak boleh lebih dari stok!', 'red'))
 
             return
+        
+        priceWithOutRP = self.Regex(price)
+        
+        summary = priceWithOutRP * amount
+        summaryRP = self.formatrupiah(summary)
+        summary = colored(summaryRP,'green')
 
-        summary = colored(price * amount, 'green')
-
-        print(f'\nTotal = {price} x {stock} = {summary}')
+        print(f'\nTotal = {price} x {amount} = {summary}')
 
         print(f'Total pembayaran adalah : {summary}')
 
@@ -230,7 +227,7 @@ class Application:
 
         if paid == 'n':
             print(colored('Pembayaran tidak dilanjutkan!', 'red'))
-            time.sleep(3)
+            time.sleep(2)
 
             return
 
@@ -238,21 +235,12 @@ class Application:
         df.loc[df.KODE == code, 'STOK'] -= amount
 
         self.addToTransactionHistory(
-            selectedData, customer_name, amount, price * amount)
+            selectedData, customer_name, amount, summaryRP)
 
         df.to_csv(self.ACTION_FIGURE_CSV, index=False)
 
         print(colored('\nTerima kasih sudah membayar! ^^', 'green'))
-        time.sleep(3)
-
-        return
-
-    def transactionHistory(self):
-        print(colored('[+] DAFTAR HISTORI TRANSAKSI [+]\n', 'green'))
-
-        df = pandas.read_csv(self.TRANSACTION_HISTORY_CSV)
-
-        print(tabulate(df, headers='keys', showindex='never', tablefmt='pretty'))
+        time.sleep(2)
 
         return
 
@@ -273,10 +261,47 @@ class Application:
         newData = pandas.DataFrame(data)
 
         newData.to_csv(self.TRANSACTION_HISTORY_CSV,
-                       index=False, mode='a', header=False)
+                    index=False, mode='a', header=False)
 
         return
+    
+    def transactionHistory(self):
+        print(colored('[+] DAFTAR HISTORI TRANSAKSI [+]\n', 'green'))
 
+        df = pandas.read_csv(self.TRANSACTION_HISTORY_CSV)
+
+        print(tabulate(df, headers='keys', showindex='never', tablefmt='pretty'))
+
+        return
+    
+    def menuList(self):
+        print(colored('[====================]', 'green'))
+        print(colored('[+] Menu List User [+]', 'yellow'))
+        print(colored('[====================]', 'green'))
+        print(colored('[1]', 'magenta'), 'Daftar Action Figure')
+        print(colored('[2]', 'yellow'), 'Transaksi')
+        print(colored('[99]', 'red'), 'Keluar Aplikasi')
+
+        menu = int(input('\nMasukan menu yang ingin dipilih : '))
+
+        return menu
+
+    def menuListAdmin(self):
+        print(colored('[====================]', 'green'))
+        print(colored('[+] Menu List Admin [+]', 'yellow'))
+        print(colored('[====================]', 'green'))
+        print(colored('[1]', 'magenta'), 'Daftar Action Figure')
+        print(colored('[2]', 'blue'), 'Tambah Action Figure')
+        print(colored('[3]', 'green'), 'Ubah Action Figure')
+        print(colored('[4]', 'red'), 'Hapus Action Figure')
+        print(colored('[5]', 'yellow'), 'Transaksi')
+        print(colored('[6]', 'cyan'), 'Daftar Histori Transaksi')
+        print(colored('[99]', 'red'), 'Keluar Aplikasi')
+
+        menu = int(input('\nMasukan menu yang ingin dipilih : '))
+
+        return menu
+    
     def main(self):
         self.cls()
 
