@@ -23,24 +23,24 @@ class Application:
     def cls(self):
         os.system('cls')
         return
-    
+
     # Format Rupiah
     def formatrupiah(self, uang):
         y = str(uang)
-        if len(y) <= 3 :
-            return 'Rp ' + y     
-        else :
+        if len(y) <= 3:
+            return 'Rp ' + y
+        else:
             p = y[-3:]
             q = y[:-3]
-            return   self.formatrupiah(q) + '.' + p
-            print ('Rp ') +  self.formatrupiah(q) + '.' + p
-        
+            return self.formatrupiah(q) + '.' + p
+            print('Rp ') + self.formatrupiah(q) + '.' + p
+
     # Slice money
     def Regex(self, uang):
         money = uang
         get_int_only = ''.join(x for x in money if x.isdigit())
         return int(get_int_only)
-        
+
     def register(self):
         Create_Username = input("\nMasukan Username : ")
         if Create_Username in self.USERS.get("username"):
@@ -86,9 +86,9 @@ class Application:
     def insertData(self):
         code = input("\nMasukkan Kode : ")
         name = input("Masukkan Nama : ")
-        price = input("Masukkan Harga : ")        
+        price = input("Masukkan Harga : ")
         stock = input("Masukkan Stok : ")
-        
+
         data = [
             [code, name, self.formatrupiah(price), stock]
         ]
@@ -167,7 +167,7 @@ class Application:
 
         print(colored('Data berhasil di Hapus!', 'green'))
         time.sleep(2)
-        
+
         return
 
     def transaction(self):
@@ -200,22 +200,22 @@ class Application:
 
         coloredName = colored(name, 'cyan')
         coloredPrice = colored(price, 'green')
-        
+
         print(f'\nHarga satuan dari {coloredName} adalah {coloredPrice}.')
 
         amount = int(
             input('\nBerapa yang ingin dibeli (tidak boleh lebih dari stok yang ada) : '))
 
-        if amount >= stock:
+        if amount > stock:
             print(colored('\nTidak boleh lebih dari stok!', 'red'))
 
             return
-        
+
         priceWithOutRP = self.Regex(price)
-        
+
         summary = priceWithOutRP * amount
         summaryRP = self.formatrupiah(summary)
-        summary = colored(summaryRP,'green')
+        summary = colored(summaryRP, 'green')
 
         print(f'\nTotal = {price} x {amount} = {summary}')
 
@@ -261,10 +261,10 @@ class Application:
         newData = pandas.DataFrame(data)
 
         newData.to_csv(self.TRANSACTION_HISTORY_CSV,
-                    index=False, mode='a', header=False)
+                       index=False, mode='a', header=False)
 
         return
-    
+
     def transactionHistory(self):
         print(colored('[+] DAFTAR HISTORI TRANSAKSI [+]\n', 'green'))
 
@@ -273,7 +273,7 @@ class Application:
         print(tabulate(df, headers='keys', showindex='never', tablefmt='pretty'))
 
         return
-    
+
     def menuList(self):
         print(colored('[====================]', 'green'))
         print(colored('[+] Menu List User [+]', 'yellow'))
@@ -301,7 +301,7 @@ class Application:
         menu = int(input('\nMasukan menu yang ingin dipilih : '))
 
         return menu
-    
+
     def main(self):
         self.cls()
 
